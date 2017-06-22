@@ -27,14 +27,14 @@ Optimality will optimize your website for users, search engines and social netwo
 
 = Database Optimization =
 
-* Automatically/manually remove expired transients from the database.
-* Automatically/manually remove automatic post drafts from the database.
-* Automatically/manually remove post revision history from the database.
-* Automatically/manually remove orphaned post meta from the database.
-* Automatically/manually remove orphaned relationships from the database.
-* Automatically/manually remove trash/spam comments from the database.
-* Automatically/manually remove pingbacks/trackbacks from the database.
-* Automatically/manually remove orphaned meta data from the database.
+* Delete expired transients from the database.
+* Delete automatic post drafts from the database.
+* Delete post revision history from the database.
+* Delete orphaned post meta from the database.
+* Delete orphaned relationships from the database.
+* Delete trash/spam comments from the database.
+* Delete pingbacks/trackbacks from the database.
+* Delete orphaned meta data from the database.
 
 = Website Structure Optimization =
 
@@ -66,8 +66,8 @@ Optimality will optimize your website for users, search engines and social netwo
 It hasn't been tested on _multisites_ yet. So if you own a multisite some features might work not as advertised.
 
 == Installation ==
-1. Upload plugin folder to the \'/wp-content/plugins/\' directory,
-2. Activate the plugin through the \'Plugins\' menu in WordPress.
+1. Upload plugin folder to the '/wp-content/plugins/' directory,
+2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Select the desired options on the Settings page of the plugin.
 
 == Changelog ==
