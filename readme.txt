@@ -13,7 +13,7 @@ Optimizes website's content delivery, images, database, permalink structure, sea
 
 The plugin optimizes your website for users, search engine robots and social networks. Your website will load much faster, robots will find the markup they are looking for and social networks will show attractive snippets of your content.
 
-Plugin's functionality can be roughly divided into 5 major categories: Content Delivery Optimization (CDO), Database Structure Optimization (DSO), Website Structure Optimization (WSO), Search Engine Optimization (SEO) and Social Media Optimization (SMO).
+Plugin's functionality can be roughly divided into 5 major categories: Content Delivery Optimization (CDO), Database Optimization (DBO), Website Structure Optimization (WSO), Search Engine Optimization (SEO) and Social Media Optimization (SMO).
 
 = Content Delivery Optimization =
 * Removes unnecessary meta tags from the head section of HTML.
