@@ -14,7 +14,6 @@ Optimizes website\'s content delivery, images, database, permalink structure, se
 Optimality will optimize your website for users, search engines and social networks. The plugin was created for personal projects and is already working on high traffic websites, it does more with less code and less overhead. Here is what it has to offer:
 
 = Content Delivery Optimization =
-
 * Remove unnecessary meta tags from the head section of HTML.
 * Reduce DNS lookup time by pre-resolving all external domains.
 * Remove comments, unnecessary whitespace and empty nodes from HTML.
@@ -26,7 +25,6 @@ Optimality will optimize your website for users, search engines and social netwo
 * Canonicalize image URLs, add 'srcset' attributes and serve from CDN.
 
 = Database Optimization =
-
 * Delete expired transients from the database.
 * Delete automatic post drafts from the database.
 * Delete post revision history from the database.
@@ -37,33 +35,35 @@ Optimality will optimize your website for users, search engines and social netwo
 * Delete orphaned meta data from the database.
 
 = Website Structure Optimization =
-
 * Remove the mandatory base from the permalinks of categories.
 * Redirect author archive pages to the home page of the website.
 * Redirect image attachment pages to the URL of the parent page.
 * Redirect ?replytocom=id to #comment-id in comment replies.
 
 = Search Engines Optimization =
-
 * Configure title and description templates for search engines.
 * Generate proper schema.org markup for every page type.
 * Create an XML sitemap of pages, posts, categories, tags, images, etc.
 
 = Social Media Optimization =
-
 * Configure title and description templates for social networks.
 * Generate proper Open Graph markup for every page type.
 * Generate proper Twitter markup for every page type.
 
 = General Features =
-
 * Small (132kB) and fast (no noticeable overhead).
 * Not invasive - doesnt pollute your admin area.
 * Leaves no traces if you choose to try and then deinstall.
 
 = Important =
-
 It hasn't been tested on _multisites_ yet. So if you own a multisite some features might work not as advertised.
+
+== Screenshots ==
+1. Content delivery optimization options.
+2. Database optimization options.
+3. Website structure optimization options.
+4. Search engines optimization options.
+5. Social media optimization options.
 
 == Installation ==
 1. Upload plugin folder to the '/wp-content/plugins/' directory,
