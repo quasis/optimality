@@ -61,7 +61,7 @@ Optimality will optimize your website for users, search engines and social netwo
 * Not invasive - doesnt pollute your admin area.
 * Leaves no traces if you choose to try and then deinstall.
 
-= Note =
+= Important =
 
 It hasn't been tested on _multisites_ yet. So if you own a multisite some features might work not as advertised.
 
