@@ -4,7 +4,7 @@
  * Plugin Name: Optimality
  * Plugin URI:  https://wordpress.org/plugins/optimality
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
- * Version:     0.2.0
+ * Version:     0.3.0
  * License:     GPLv2 or later
  * Author:      Optimality
  * Author URI:  https://optimality.io
@@ -32,6 +32,8 @@ require_once('markup/font.php');
 
 class Plugin
 {
+    const WIDGET = 'widget';
+
     protected $preset;
     protected $option;
     protected $attrib;
@@ -47,11 +49,13 @@ class Plugin
 
         $this->option = array_merge($this->preset =
         [
+            Html::CUSTOM    => NULL,
+            Plugin::WIDGET  => 'on',
+
             Html::UNMETA    => NULL,
             Html::UNEMOJ    => NULL,
             Html::PREDNS    => NULL,
             Html::MINIFY    => NULL,
-            Html::CUSTOM    => NULL,
             Style::MINIFY   => NULL,
             Style::CDNLIB   => NULL,
             Script::MINIFY  => NULL,
@@ -71,6 +75,7 @@ class Plugin
 
             Section::UNBASE => NULL,
             Comment::UNLINK => NULL,
+            Comment::UNPAGE => NULL,
             User::UNLINK    => NULL,
             Media::UNLINK   => NULL,
 
@@ -271,7 +276,7 @@ class Plugin
         });
 
 
-        add_action('admin_bar_menu', function($widget)
+        @$this->option[Plugin::WIDGET] && add_action('admin_bar_menu', function($widget)
         {
             $this->addWidget($widget,        NULL,   ucwords(__NAMESPACE__    ), $this->urlPlugin());
             $this->addWidget($widget, 'pagespeed', __('PageSpeed Insights'    ), 'https://developers.google.com/speed/pagespeed/insights/' , ['url'  => __TARGET__]);
@@ -309,12 +314,15 @@ class Plugin
             load_plugin_textdomain(__NAMESPACE__, false, basename(__DIR__) . '/locale');
             register_setting(__NAMESPACE__, __NAMESPACE__, array( $this, 'onSubmit' ));
 
+            $this->addModule($module = 'gen', __('General Settings'     ));
+            $this->addOption(Html::CUSTOM   , __('Custom HTML'          ), $module, 'editor', __('This code will be injected into the head section of every HTML page.'));
+            $this->addOption(Plugin::WIDGET , __('Admin Bar Menu'       ), $module, 'binary', __('Display a menu on the Admin Bar when browsing as admin.'));
+
             $this->addModule($module = 'cdo', __('Content Delivery'     ));
             $this->addOption(Html::UNMETA   , __('Clean Meta Tags'      ), $module, 'binary', __('Remove unnecessary meta tags from the head section of HTML.'));
             $this->addOption(Html::UNEMOJ   , __('Disable Emojis'       ), $module, 'binary', __('Remove styles and scripts of the new WordPress emoji feature.'));
             $this->addOption(Html::PREDNS   , __('Prefetch DNS'         ), $module, 'binary', __('Reduce DNS lookup time by pre-resolving all external domains.'));
             $this->addOption(Html::MINIFY   , __('Optimize HTML'        ), $module, 'binary', __('Remove comments, unnecessary whitespace and empty nodes.'));
-            $this->addOption(Html::CUSTOM   , __('Custom HTML'          ), $module, 'editor', __('This code will be injected into the head section of every HTML page.'));
             $this->addOption(Style::MINIFY  , __('Optimize Styles'      ), $module, 'binary', __('Combine files, flatten imports, remove comments and cache.'));
             $this->addAction(Style::MINIFY  , __('Clean Style Cache'    ), 'trash', [Style::class, 'cleanCache'], [Style::class, 'countCache']);
             $this->addOption(Style::CDNLIB  , __('Offload Styles'       ), $module, 'binary', __('Serve popular CSS libraries from content delivery networks.'));
@@ -349,6 +357,7 @@ class Plugin
             $this->addOption(User::UNLINK   , __('Disable User Archives'), $module, 'binary', __('Redirect author archive pages to the home page of the website.'));
             $this->addOption(Media::UNLINK  , __('Disable Attachments'  ), $module, 'binary', __('Redirect image attachment pages to the URL of the parent page.'));
             $this->addOption(Comment::UNLINK, __('Disable Reply Queries'), $module, 'binary', __('Redirect ?replytocom=id to #comment-id in comment replies.'));
+            $this->addOption(Comment::UNPAGE, __('Depaginate Comments'  ), $module, 'binary', __('Redirect paginated comments to the URL of the parent page.'));
 
             $this->addModule($module = 'seo', __('Search Engines'       ));
             $this->addOption(Site::SEMETA   , __('Homepage'             ), $module, 'binary', __('Insert title, meta tags, schema, and include in the sitemap.'));

@@ -2,7 +2,7 @@
 
 namespace optimality;
 
-class Post extends Html
+class Post extends Page
 {
     const DBAUTO = 'post_dbauto';
     const DBEDIT = 'post_dbedit';
@@ -16,7 +16,6 @@ class Post extends Html
 
     public $section;
     public $terms = [];
-    public $notes;
 
 
     function __construct($object)
@@ -24,16 +23,6 @@ class Post extends Html
         parent::__construct($object);
 
         $this->type  = 'Article';
-        $this->ruid  = $object->ID;
-        $this->slug  = $object->post_name;
-        $this->name  = $object->post_title;
-        $this->lead  = $object->post_excerpt;
-        $this->image = get_the_post_thumbnail_url($object, 'full');
-        $this->route = get_page_link($object);
-        $this->date  = date(DATE_W3C, strtotime($object->post_date));
-        $this->edit  = date(DATE_W3C, strtotime($object->post_modified));
-        $this->user  = $object->post_author;
-        $this->notes = intval($object->comment_count);
     }
 
 
@@ -53,11 +42,6 @@ class Post extends Html
     {
         return array_merge(parent::getMeta($option),
         [
-            'og:type'                => 'article',
-            'article:published_time' => $this->date,
-            'article:modified_time'  => $this->edit,
-            'article:author'         => $this->user->face,
-            'article:publisher'      => $this->site->face,
             'article:section'        => $this->section,
             'article:tag'            => $this->terms,
         ]);
@@ -66,14 +50,6 @@ class Post extends Html
 
     function apply($target, $option)
     {
-        if (@$option[Comment::UNLINK])
-        {
-            if ($source = @$_GET['replytocom'])
-            {
-                return Comment::route(NULL, $source);
-            }
-        }
-
         if (is_array($result = get_the_terms($this->ruid, 'category')))
         {
             $this->section = @$result[0]->name;

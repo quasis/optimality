@@ -75,8 +75,15 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 
 == Changelog ==
 
+= 0.3.0 =
+* Feature: Added option to disable Admin Bar menu
+* Feature: Moved custom HTML to general settings
+* Feature: Redirect paginated comment pages to their parent
+* Feature: More CDN providers for popular JS/CSS libraries
+* Feature: Ignore SSL errors on self signed SSL certificates
+
 = 0.2.0 =
-* Feature: Extended the mapping of popular JS/CSS libraries
+* Feature: More CDN providers for popular JS/CSS libraries
 * Feature: +10% reduction in filesize of PNG thumbnails
 
 = 0.1.0 =

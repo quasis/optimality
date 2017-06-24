@@ -8,6 +8,7 @@ class Comment extends Html
     const DBPING = 'comment_dbping';
     const DBMETA = 'comment_dbmeta';
     const UNLINK = 'comment_unlink';
+    const UNPAGE = 'comment_unpage';
     const SEMETA = 'comment_semeta';
     const SENAME = 'comment_sename';
     const SEDESC = 'comment_sedesc';

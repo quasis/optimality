@@ -21,11 +21,15 @@ class Style
         '#wpadminbar',
     ];
 
-    static $export =
+    static $hoster =
     [
-        'mediaelement'    => 'https://cdnjs.cloudflare.com/ajax/libs/mediaelement/%s/mediaelementplayer.min.css',
+        'animate'         => 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/%s/animate.min.css',
         'bootstrap'       => 'https://maxcdn.bootstrapcdn.com/bootstrap/%s/css/bootstrap.min.css',
         'font-awesome'    => 'https://maxcdn.bootstrapcdn.com/font-awesome/%s/css/font-awesome.min.css',
+        'materialize'     => 'https://cdnjs.cloudflare.com/ajax/libs/materialize/%s/css/materialize.min.css',
+        'mediaelement'    => 'https://cdnjs.cloudflare.com/ajax/libs/mediaelement/%s/mediaelementplayer.min.css',
+        'normalize'       => 'https://cdnjs.cloudflare.com/ajax/libs/normalize/%s/normalize.min.css',
+        'skeleton'        => 'https://cdnjs.cloudflare.com/ajax/libs/skeleton/%s/skeleton.min.css',
     ];
 
 
@@ -96,11 +100,16 @@ class Style
 
     private function bundle($target)
     {
+        $stream = stream_context_create(
+        [
+            'ssl' => array('verify_peer' => false, 'verify_peer_name' => false),
+        ]);  
+
         $import = '@import \s* url \( [\'"]? ([^\'"\)]+) [\'"]? \) \s* ([^;]*) \s* ;';
 
-        return preg_replace_callback("/$import/ix", function($result)
+        return preg_replace_callback("/$import/ix", function($result) use($stream)
         {
-            if ($string = @file_get_contents($source = $result[1]))
+            if ($string = @file_get_contents($source = $result[1], false, $stream))
             {
                 $string = (new static([$string]))->bundle($source);
 
@@ -133,7 +142,7 @@ class Style
 
     static function serve($source, $handle)
     {
-        if (($target = @static::$export[$handle]) && ($offset = strpos($source, '?ver=')))
+        if (($target = @static::$hoster[$handle]) && ($offset = strpos($source, '?ver=')))
         {
             return sprintf($target, substr($source, $offset + 5));
         }

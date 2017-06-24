@@ -11,6 +11,8 @@ class Page extends Html
     const SMNAME = 'page_smname';
     const SMDESC = 'page_smdesc';
 
+    public $notes;
+
 
     function __construct($object)
     {
@@ -26,6 +28,7 @@ class Page extends Html
         $this->date  = date(DATE_W3C, strtotime($object->post_date));
         $this->edit  = date(DATE_W3C, strtotime($object->post_modified));
         $this->user  = $object->post_author;
+        $this->notes = intval($object->comment_count);
     }
 
 
@@ -39,6 +42,28 @@ class Page extends Html
             'article:author'         => $this->user->face,
             'article:publisher'      => $this->site->face,
         ]);
+    }
+
+
+    function apply($target, $option)
+    {
+        if (@$option[Comment::UNLINK])
+        {
+            if ($source = @$_GET['replytocom'])
+            {
+                return Comment::route(NULL, $source);
+            }
+        }
+
+        if (@$option[Comment::UNPAGE])
+        {
+            if (get_query_var('cpage'))
+            {
+                return $this->route;
+            }
+        }
+
+        return parent::apply($target, $option);
     }
 
 
