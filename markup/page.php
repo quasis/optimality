@@ -47,6 +47,14 @@ class Page extends Html
 
     function apply($target, $option)
     {
+        if (@$option[static::SEMETA])
+        {
+            add_filter('post_class', function($vector)
+            {
+                return array_diff($vector, ['hentry']);
+            });
+        }
+
         if (@$option[Comment::UNLINK])
         {
             if ($source = @$_GET['replytocom'])

@@ -75,6 +75,9 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 
 == Changelog ==
 
+= 0.4.0 =
+* Feature: Remove 'hentry' class from posts to fix Webmaster errors
+
 = 0.3.0 =
 * Feature: Added option to disable Admin Bar menu
 * Feature: Moved custom HTML to general settings
