@@ -1,6 +1,6 @@
 === Optimality ===
 Contributors: optimality
-Tags: minify, optimization, optimize, compress, speed, cache, performance, aggregate, minimize, minification, pagespeed, seo, comments, css, database, html, image, javascript, JS, lossless, meta tags, open graph, revisions, schema markup, share, sitemap, smo, social, spam, stylesheet
+Tags: optimization, optimize, pagespeed, performance, speed, aggregate, async, cache, cdn, comments, compress, compression, css, database, defer javascript, google libraries, google pagespeed, gtmetrix, html, image, javascript, JS, lazy load images, lossless, meta tags, minification, minify, minimize, open graph, render-blocking css, render-blocking javascript, revisions, schema, seo, share, sitemap, smo, social, spam, stylesheet, yslow
 Requires at least: 4.0
 Tested up to: 4.8
 Stable tag: 4.8
@@ -41,6 +41,7 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 * Redirects author archive pages to the home page of the website.
 * Redirects image attachment pages to the URL of the parent page.
 * Redirects ?replytocom=id to #comment-id in comment replies.
+* Redirects paginated comment pages to the parent page.
 
 = Search Engines Optimization =
 * Provides title and description templates for search engines.
