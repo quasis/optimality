@@ -44,6 +44,35 @@ class Html extends \DOMDocument
     }
 
 
+    function __invoke($target, $option)
+    {
+        $this->site = $this->site ?: new Site();
+
+        if ($this->user && is_numeric($this->user))
+        {
+            $this->user = new User(get_userdata($this->user));
+        }
+
+        $this->attr = array
+        (
+            ':name'        => $this->name,
+            ':tagline'     => $this->lead,
+            ':excerpt'     => $this->lead,
+            ':caption'     => $this->lead,
+            ':category'    => @$this->section,
+            ':biography'   => $this->desc,
+            ':description' => $this->desc,
+            'site:name'    => @$this->site->name,
+            'site:tagline' => @$this->site->lead,
+        );
+
+        $this->file = array
+        (
+            __CDNURL__ => $option[static::CDNURL],
+        );
+    }
+
+
     function setMeta($handle, $string)
     {
         if (is_array($string))
@@ -180,35 +209,6 @@ class Html extends \DOMDocument
             $this->body->appendChild($script);
             $script->nodeValue = 'console.log(' . json_encode($object) . ');';
         }
-    }
-
-
-    function apply($target, $option)
-    {
-        $this->site = $this->site ?: new Site();
-
-        if ($this->user && is_numeric($this->user))
-        {
-            $this->user = new User(get_userdata($this->user));
-        }
-
-        $this->attr = array
-        (
-            ':name'        => $this->name,
-            ':tagline'     => $this->lead,
-            ':excerpt'     => $this->lead,
-            ':caption'     => $this->lead,
-            ':category'    => @$this->section,
-            ':biography'   => $this->desc,
-            ':description' => $this->desc,
-            'site:name'    => @$this->site->name,
-            'site:tagline' => @$this->site->lead,
-        );
-
-        $this->file = array
-        (
-            __CDNURL__ => $option[static::CDNURL],
-        );
     }
 
 

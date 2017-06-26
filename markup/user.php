@@ -43,6 +43,17 @@ class User extends Html
     }
 
 
+    function __invoke($target, $option)
+    {
+        if (@$option[static::UNLINK])
+        {
+            return static::route($target, NULL);
+        }
+
+        return parent::__invoke($target, $option);
+    }
+
+
     function getJson($option)
     {
         return array_merge(parent::getJson($option),
@@ -64,17 +75,6 @@ class User extends Html
             'profile:last_name'  => $this->lname,
             'profile:gender'     => NULL,
         ]);
-    }
-
-
-    function apply($target, $option)
-    {
-        if (@$option[static::UNLINK])
-        {
-            return static::route($target, NULL);
-        }
-
-        return parent::apply($target, $option);
     }
 
 

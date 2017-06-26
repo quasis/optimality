@@ -48,7 +48,7 @@ class Sitemap extends \DOMDocument
     }
 
 
-    function apply($target, $option)
+    function __invoke($target, $option)
     {
         $this->file = array
         (

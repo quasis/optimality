@@ -26,6 +26,22 @@ class Post extends Page
     }
 
 
+    function __invoke($target, $option)
+    {
+        if (is_array($result = get_the_terms($this->ruid, 'category')))
+        {
+            $this->section = @$result[0]->name;
+        }
+
+        if (is_array($result = get_the_terms($this->ruid, 'post_tag')))
+        {
+            foreach ($result as $object) $this->terms[] = $object->name; 
+        }
+
+        return parent::__invoke($target, $option);
+    }
+
+
     function getJson($option)
     {
         return array_merge(parent::getJson($option),
@@ -45,22 +61,6 @@ class Post extends Page
             'article:section'        => $this->section,
             'article:tag'            => $this->terms,
         ]);
-    }
-
-
-    function apply($target, $option)
-    {
-        if (is_array($result = get_the_terms($this->ruid, 'category')))
-        {
-            $this->section = @$result[0]->name;
-        }
-
-        if (is_array($result = get_the_terms($this->ruid, 'post_tag')))
-        {
-            foreach ($result as $object) $this->terms[] = $object->name; 
-        }
-
-        return parent::apply($target, $option);
     }
 
 

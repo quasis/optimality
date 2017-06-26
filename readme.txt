@@ -77,6 +77,7 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 == Changelog ==
 
 = 0.4.0 =
+* Feature: ItemList schema instead CollectionPage for taxonomies
 * Feature: Remove 'hentry' class from posts to fix Webmaster errors
 
 = 0.3.0 =

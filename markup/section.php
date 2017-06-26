@@ -2,7 +2,7 @@
 
 namespace optimality;
 
-class Section extends Html
+class Section extends Term
 {
     const UNBASE = 'section_unbase';
     const SEMETA = 'section_semeta';
@@ -16,17 +16,10 @@ class Section extends Html
     function __construct($object)
     {
         parent::__construct($object);
-
-        $this->type  = 'CollectionPage';
-        $this->ruid  = $object->term_id;
-        $this->slug  = $object->slug;
-        $this->name  = $object->name;
-        $this->desc  = $object->description;
-        $this->route = get_term_link($object);
     }
 
 
-    function apply($target, $option)
+    function __invoke($target, $option)
     {
         if ($option[static::UNBASE])
         {
@@ -36,7 +29,7 @@ class Section extends Html
             }
         }
 
-        return parent::apply($target, $option);
+        return parent::__invoke($target, $option);
     }
 
 

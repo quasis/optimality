@@ -4,7 +4,7 @@
  * Plugin Name: Optimality
  * Plugin URI:  https://wordpress.org/plugins/optimality
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
- * Version:     0.3.0
+ * Version:     0.4.0
  * License:     GPLv2 or later
  * Author:      Optimality
  * Author URI:  https://optimality.io
@@ -17,8 +17,8 @@ require_once('markup/html.php');
 require_once('markup/site.php');
 require_once('markup/page.php');
 require_once('markup/post.php');
-require_once('markup/section.php');
 require_once('markup/term.php');
+require_once('markup/section.php');
 require_once('markup/user.php');
 require_once('markup/comment.php');
 require_once('markup/media.php');
@@ -264,7 +264,7 @@ class Plugin
 
             $markup = new $markup(get_queried_object());
 
-            if ($target = $markup->apply(__TARGET__, $this->option))
+            if ($target = $markup(__TARGET__, $this->option))
             {
                 wp_redirect($target, 301); exit();
             }

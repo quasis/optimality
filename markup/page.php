@@ -32,20 +32,7 @@ class Page extends Html
     }
 
 
-    function getMeta($option)
-    {
-        return array_merge(parent::getMeta($option),
-        [
-            'og:type'                => 'article',
-            'article:published_time' => $this->date,
-            'article:modified_time'  => $this->edit,
-            'article:author'         => $this->user->face,
-            'article:publisher'      => $this->site->face,
-        ]);
-    }
-
-
-    function apply($target, $option)
+    function __invoke($target, $option)
     {
         if (@$option[static::SEMETA])
         {
@@ -71,7 +58,20 @@ class Page extends Html
             }
         }
 
-        return parent::apply($target, $option);
+        return parent::__invoke($target, $option);
+    }
+
+
+    function getMeta($option)
+    {
+        return array_merge(parent::getMeta($option),
+        [
+            'og:type'                => 'article',
+            'article:published_time' => $this->date,
+            'article:modified_time'  => $this->edit,
+            'article:author'         => $this->user->face,
+            'article:publisher'      => $this->site->face,
+        ]);
     }
 
 
