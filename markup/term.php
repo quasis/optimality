@@ -49,6 +49,8 @@ class Term extends Html
     {
         return array_merge(parent::getJson($option),
         [
+            'publisher'       => NULL,
+            'author'          => NULL,
             'numberOfItems'   => count($this->items),
             'itemListElement' => $this->items,
         ]);
