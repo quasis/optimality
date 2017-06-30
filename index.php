@@ -4,7 +4,7 @@
  * Plugin Name: Optimality
  * Plugin URI:  https://wordpress.org/plugins/optimality
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
- * Version:     0.4.0
+ * Version:     0.5.0
  * License:     GPLv2 or later
  * Author:      Optimality
  * Author URI:  https://optimality.io
@@ -56,6 +56,7 @@ class Plugin
             Html::UNEMOJ    => NULL,
             Html::PREDNS    => NULL,
             Html::MINIFY    => NULL,
+            Html::STATIC    => NULL,
             Style::MINIFY   => NULL,
             Style::CDNLIB   => NULL,
             Script::MINIFY  => NULL,
@@ -146,23 +147,23 @@ class Plugin
         register_deactivation_hook(__FILE__, function()
         {
             wp_clear_scheduled_hook( __NAMESPACE__ );
-            Style::cleanCache(); Script::cleanCache();
+            Style::cleanCache(); Script::cleanCache(); Html::cleanCache();
         });
 
 
         add_action(__NAMESPACE__, function()
         {
-            @$this->option[Site::DBTEMP] && Site::cleanTemp();
-            @$this->option[Post::DBAUTO] && Post::cleanAuto();
-            @$this->option[Post::DBEDIT] && Post::cleanEdit();
-            @$this->option[Post::DBMETA] && Post::cleanMeta();
-            @$this->option[Term::DBLINK] && Term::cleanLink();
-            @$this->option[Comment::DBSPAM] && Comment::cleanSpam();
-            @$this->option[Comment::DBPING] && Comment::cleanPing();
-            @$this->option[Comment::DBMETA] && Comment::cleanMeta();
+            isset($this->option[Site::DBTEMP]) && Site::cleanTemp();
+            isset($this->option[Post::DBAUTO]) && Post::cleanAuto();
+            isset($this->option[Post::DBEDIT]) && Post::cleanEdit();
+            isset($this->option[Post::DBMETA]) && Post::cleanMeta();
+            isset($this->option[Term::DBLINK]) && Term::cleanLink();
+            isset($this->option[Comment::DBSPAM]) && Comment::cleanSpam();
+            isset($this->option[Comment::DBPING]) && Comment::cleanPing();
+            isset($this->option[Comment::DBMETA]) && Comment::cleanMeta();
         });
 
-        if (@$this->option[Image::MINIFY])
+        if (isset($this->option[Image::MINIFY]))
         {
             add_filter('wp_image_editors', [Image::class, 'mount']);
         }
@@ -174,7 +175,7 @@ class Plugin
 
     function __constructFront()
     {
-        if (@$this->option[Html::UNMETA])
+        if (isset($this->option[Html::UNMETA]))
         {
             remove_action('wp_head', 'adjacent_posts_rel_link_wp_head');
             remove_action('wp_head', 'feed_links_extra', 3);
@@ -186,7 +187,7 @@ class Plugin
             remove_action('wp_head', 'wp_shortlink_wp_head');
         }
 
-        if (@$this->option[Html::UNEMOJ])
+        if (isset($this->option[Html::UNEMOJ]))
         {
             remove_filter('comment_text_rss' , 'wp_staticize_emoji');
             remove_filter('the_content_feed' , 'wp_staticize_emoji');
@@ -195,48 +196,48 @@ class Plugin
             remove_action('wp_print_styles'  , 'print_emoji_styles');
         }
 
-        if (@$this->option[Html::PREDNS])
+        if (isset($this->option[Html::PREDNS]))
         {
             remove_action('wp_head', 'wp_resource_hints', 2);
         }
 
-        if (@$this->option[Section::UNBASE])
+        if (isset($this->option[Section::UNBASE]))
         {
             add_filter('request'  , [Section::class, 'query'], 10, 1);
             add_filter('term_link', [Section::class, 'route'], 10, 3);
         }
 
-        if (@$this->option[Comment::UNLINK])
+        if (isset($this->option[Comment::UNLINK]))
         {
             add_filter('comment_reply_link', [Comment::class, 'route'], 10, 1);
         }
 
-        if (@$this->option[User::UNLINK])
+        if (isset($this->option[User::UNLINK]))
         {
             add_filter('author_link', [User::class, 'route'], 10, 2);
         }
 
-        if (@$this->option[Media::UNLINK])
+        if (isset($this->option[Media::UNLINK]))
         {
             add_filter('attachment_link', [Media::class, 'route'], 10, 2);
         }
 
-        if (@$this->option[Image::SRCSET])
+        if (isset($this->option[Image::SRCSET]))
         {
             remove_filter('the_content', 'wp_make_content_images_responsive');
         }
 
-        if (@$this->option[Style::CDNLIB])
+        if (isset($this->option[Style::CDNLIB]))
         {
             add_filter('style_loader_src', [Style::class, 'serve'], 10, 2);
         }
 
-        if (@$this->option[Script::MINIFY])
+        if (isset($this->option[Script::MINIFY]))
         {
             remove_action('comment_form', 'wp_comment_form_unfiltered_html_nonce');
         }
 
-        if (@$this->option[Script::CDNLIB])
+        if (isset($this->option[Script::CDNLIB]))
         {
             add_filter('script_loader_src', [Script::class, 'serve'], 10, 2);
         }
@@ -245,7 +246,6 @@ class Plugin
         {
             switch (true)
             {
-                case is_admin()     :
                 case is_feed()      :
                 case is_robots()    : return;
                 case is_front_page(): $markup = Site::class;    break;
@@ -262,6 +262,16 @@ class Plugin
                 default             : return;
             }
 
+            $ishtml = preg_grep(Html::HEADER, headers_list());
+            $method = strtoupper(@$_SERVER['REQUEST_METHOD']);
+            
+            if ($static = isset( $this->option[ Html::STATIC ] ) &&
+                $ishtml && empty($_REQUEST) && $method === 'GET' &&
+                !is_user_logged_in() && !defined('DOING_CRON'))
+            {
+                Html::serve(@$_SERVER['HTTP_ACCEPT_ENCODING']);
+            }
+
             $markup = new $markup(get_queried_object());
 
             if ($target = $markup(__TARGET__, $this->option))
@@ -269,14 +279,15 @@ class Plugin
                 wp_redirect($target, 301); exit();
             }
 
-            ob_start(function($string) use($markup)
+            $ishtml && ob_start(function($string) use($markup, $static)
             {
-                return $markup->build($string, $this->option);
+                return call_user_func(array($markup, $static ?
+                    'cache' : 'build'), $string, $this->option);
             });
         });
 
 
-        @$this->option[Plugin::WIDGET] && add_action('admin_bar_menu', function($widget)
+        isset($this->option[Plugin::WIDGET]) && add_action('admin_bar_menu', function($widget)
         {
             $this->addWidget($widget,        NULL,   ucwords(__NAMESPACE__    ), $this->urlPlugin());
             $this->addWidget($widget, 'pagespeed', __('PageSpeed Insights'    ), 'https://developers.google.com/speed/pagespeed/insights/' , ['url'  => __TARGET__]);
@@ -323,6 +334,8 @@ class Plugin
             $this->addOption(Html::UNEMOJ   , __('Disable Emojis'       ), $module, 'binary', __('Remove styles and scripts of the new WordPress emoji feature.'));
             $this->addOption(Html::PREDNS   , __('Prefetch DNS'         ), $module, 'binary', __('Reduce DNS lookup time by pre-resolving all external domains.'));
             $this->addOption(Html::MINIFY   , __('Optimize HTML'        ), $module, 'binary', __('Remove comments, unnecessary whitespace and empty nodes.'));
+            $this->addOption(Html::STATIC   , __('Cache HTML'           ), $module, 'binary', __('Cache dynamic HTML content and serve it as static HTML files.'));
+            $this->addAction(Html::STATIC   , __('Clean HTML Cache'     ), 'trash', [Html::class, 'cleanCache'], [Html::class, 'countCache']);
             $this->addOption(Style::MINIFY  , __('Optimize Styles'      ), $module, 'binary', __('Combine files, flatten imports, remove comments and cache.'));
             $this->addAction(Style::MINIFY  , __('Clean Style Cache'    ), 'trash', [Style::class, 'cleanCache'], [Style::class, 'countCache']);
             $this->addOption(Style::CDNLIB  , __('Offload Styles'       ), $module, 'binary', __('Serve popular CSS libraries from content delivery networks.'));

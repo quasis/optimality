@@ -21,7 +21,7 @@ class Section extends Term
 
     function __invoke($target, $option)
     {
-        if ($option[static::UNBASE])
+        if (isset($option[static::UNBASE]))
         {
             if (strpos($target, $this->route) !== 0)
             {

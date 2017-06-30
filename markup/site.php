@@ -22,7 +22,6 @@ class Site extends Html
     {
         parent::__construct($object);
 
-        $this->type  = 'WebSite';
         $this->ruid  = NULL;
         $this->name  = get_bloginfo('name');
         $this->lead  = get_bloginfo('description');
@@ -33,6 +32,16 @@ class Site extends Html
         $this->face  = get_option('facebook');
         $this->twit  = get_option('twitter');
         $this->site  = $this;
+    }
+
+
+    function getJson($option)
+    {
+        return array_merge(parent::getJson($option),
+        [
+            '@type'     => 'WebSite',
+            'publisher' => $this->goog,
+        ]);
     }
 
 

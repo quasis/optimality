@@ -17,7 +17,6 @@ class Media extends Html
     {
         parent::__construct($object);
 
-        $this->type  = 'ImageObject';
         $this->ruid  = $object->ID;
         $this->slug  = $object->post_name;
         $this->name  = $object->post_title;
@@ -28,6 +27,21 @@ class Media extends Html
         $this->date  = date(DATE_W3C, strtotime($object->post_date));
         $this->edit  = date(DATE_W3C, strtotime($object->post_modified));
         $this->user  = $object->post_author;
+    }
+
+
+    function getJson($option)
+    {
+        return array_merge(parent::getJson($option),
+        [
+            '@type'                  => 'ImageObject',
+            'headline'               => $this->name,
+            'caption'                => $this->lead,
+            'datePublished'          => $this->date,
+            'dateModified'           => $this->edit,
+            'author'                 => $this->user->goog,
+            'publisher'              => $this->site->goog,
+        ]);
     }
 
 

@@ -9,7 +9,16 @@ class Sitemap extends \DOMDocument
     const   BING = 'http://www.bing.com/ping?sitemap=';
 
     public $root;
-    public $file;
+    public $path;
+
+
+    function __invoke($target, $option)
+    {
+        $this->path = array
+        (
+            __CDNURL__  => $option[Html::CDNURL],
+        );
+    }
 
 
     function addNode($entity)
@@ -33,7 +42,7 @@ class Sitemap extends \DOMDocument
             $branch = $this->createElement('image:image');
 
             $source = $this->createElement('image:loc');
-            $source->nodeValue = strtr($entity->image, $this->file);
+            $source->nodeValue = strtr($entity->image, $this->path);
             $branch->appendChild($source);
 
             if ($entity->name)
@@ -48,15 +57,6 @@ class Sitemap extends \DOMDocument
     }
 
 
-    function __invoke($target, $option)
-    {
-        $this->file = array
-        (
-            __CDNURL__  => $option[Html::CDNURL],
-        );
-    }
-
-
     function build($string, $option)
     {
         $this->loadXML('<urlset/>', LIBXML_COMPACT|LIBXML_NOBLANKS);
@@ -65,37 +65,37 @@ class Sitemap extends \DOMDocument
         $this->root->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
         $this->root->setAttribute('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1');
 
-        if (@$option[Site::SEMETA])
+        if (isset($option[Site::SEMETA]))
         {
             array_map([$this, 'addNode'], Site::fetch());
         }
 
-        if (@$option[Page::SEMETA])
+        if (isset($option[Page::SEMETA]))
         {
             array_map([$this, 'addNode'], Page::fetch());
         }
 
-        if (@$option[Post::SEMETA])
+        if (isset($option[Post::SEMETA]))
         {
             array_map([$this, 'addNode'], Post::fetch());
         }
 
-        if (@$option[Section::SEMETA])
+        if (isset($option[Section::SEMETA]))
         {
             array_map([$this, 'addNode'], Section::fetch());
         }
 
-        if (@$option[Term::SEMETA])
+        if (isset($option[Term::SEMETA]))
         {
             array_map([$this, 'addNode'], Term::fetch());
         }
 
-        if (@$option[User::SEMETA] && !@$option[User::UNLINK])
+        if (isset($option[User::SEMETA]) && !isset($option[User::UNLINK]))
         {
             array_map([$this, 'addNode'], User::fetch());
         }
 
-        if (@$option[Media::SEMETA] && !@$option[Media::UNLINK])
+        if (isset($option[Media::SEMETA]) && !isset($option[Media::UNLINK]))
         {
             array_map([$this, 'addNode'], Media::fetch());
         }

@@ -19,9 +19,10 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 * Removes unnecessary meta tags from the head section of HTML.
 * Reduces DNS lookup time by pre-resolving all external domains.
 * Removes comments, unnecessary whitespace and empty nodes from HTML.
-* Combines stylesheets, flattens imports, removes comments and caches.
+* Caches dynamic HTML content and serves it as static HTML files.
+* Combines CSS files, flattens imports, removes comments and caches.
 * Serves popular CSS libraries from content delivery networks.
-* Combines scripts, defers loading, removes comments and caches.
+* Combines JS files, defers loading, removes comments and caches.
 * Serves popular JS libraries from content delivery networks.
 * Strips metadata and compresses thumbnail images (requires ImageMagick).
 * Canonicalizes image URLs, adds 'srcset' attributes and serves from CDN.
@@ -75,6 +76,12 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 3. Select the desired options on the Settings page of the plugin.
 
 == Changelog ==
+
+= 0.5.0 =
+* Feature: HTML cache
+* Feature: Schema markup fine-tunning
+* Feature: Code fine-tuning for faster processing
+* Bug Fix: Process only 'text/html' responses
 
 = 0.4.0 =
 * Feature: ItemList schema instead CollectionPage for taxonomies

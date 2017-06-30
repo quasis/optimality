@@ -14,52 +14,42 @@ class Post extends Page
     const SMNAME = 'post_smname';
     const SMDESC = 'post_smdesc';
 
-    public $section;
-    public $terms = [];
-
 
     function __construct($object)
     {
         parent::__construct($object);
-
-        $this->type  = 'Article';
-    }
-
-
-    function __invoke($target, $option)
-    {
-        if (is_array($result = get_the_terms($this->ruid, 'category')))
-        {
-            $this->section = @$result[0]->name;
-        }
-
-        if (is_array($result = get_the_terms($this->ruid, 'post_tag')))
-        {
-            foreach ($result as $object) $this->terms[] = $object->name; 
-        }
-
-        return parent::__invoke($target, $option);
-    }
-
-
-    function getJson($option)
-    {
-        return array_merge(parent::getJson($option),
-        [
-            'headline'               => $this->name,
-            'articleSection'         => $this->section,
-            'keywords'               => implode(',' , $this->terms),
-            'commentCount'           => $this->notes,
-        ]);
     }
 
 
     function getMeta($option)
     {
+        $object = get_the_terms($this->proto, 'category');
+
         return array_merge(parent::getMeta($option),
         [
-            'article:section'        => $this->section,
-            'article:tag'            => $this->terms,
+            'article:section' => empty($object) ? NULL : $object[0]->name,
+            'article:tag'     => array_map(function($object)
+            {
+                return $object->name;
+
+            }, get_the_terms($this->proto, 'post_tag') ?: []),
+        ]);
+    }
+
+
+    function getJson($option)
+    {
+        $object = get_the_terms($this->proto, 'category');
+
+        return array_merge(parent::getJson($option),
+        [
+            '@type'           => 'Article',
+            'articleSection'  => empty($object) ? NULL : $object[0]->name,
+            'keywords'        => implode(',', array_map(function($object)
+            {
+                return $object->name;
+
+            }, get_the_terms($this->proto, 'post_tag') ?: [])),
         ]);
     }
 

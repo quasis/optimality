@@ -4,12 +4,14 @@ namespace optimality;
 
 class Html extends \DOMDocument
 {
+    const HEADER = '/^Content-Type\:\s*text\/html/';
     const OGMETA = '/^(og|article|profile):(.+)$/';
     const CUSTOM = 'html_custom';
     const UNMETA = 'html_unmeta';
     const UNEMOJ = 'html_unemoj';
     const PREDNS = 'html_predns';
     const MINIFY = 'html_minify';
+    const STATIC = 'html_static';
     const CDNURL = 'html_cdnurl';
     const SEMETA = 'html_semeta';
     const SENAME = 'html_sename';
@@ -18,11 +20,11 @@ class Html extends \DOMDocument
     const SMNAME = 'html_smname';
     const SMDESC = 'html_smdesc';
 
+    public $proto;
     public $root;
     public $head;
     public $body;
     public $meta = [];
-    public $type;
     public $ruid;
     public $slug;
     public $name;
@@ -34,13 +36,13 @@ class Html extends \DOMDocument
     public $edit;
     public $user;
     public $site;
-    public $attr;
-    public $file;
+    public $text;
+    public $path;
 
 
     function __construct($object)
     {
-        $this->type = 'CreativeWork';
+        $this->proto = $object;
     }
 
 
@@ -53,7 +55,7 @@ class Html extends \DOMDocument
             $this->user = new User(get_userdata($this->user));
         }
 
-        $this->attr = array
+        $this->text = array
         (
             ':name'        => $this->name,
             ':tagline'     => $this->lead,
@@ -66,7 +68,7 @@ class Html extends \DOMDocument
             'site:tagline' => @$this->site->lead,
         );
 
-        $this->file = array
+        $this->path = array
         (
             __CDNURL__ => $option[static::CDNURL],
         );
@@ -119,16 +121,16 @@ class Html extends \DOMDocument
         return array
         (
             'twitter:card'        => 'summary_large_image',
-            'twitter:title'       => ucfirst(strtr(@$option[static::SMNAME], $this->attr)),
-            'twitter:description' => ucfirst(strtr(@$option[static::SMDESC], $this->attr)),
-            'twitter:image'       => strtr($this->image ?: $this->site->image, $this->file),
+            'twitter:title'       => ucfirst(strtr(@$option[static::SMNAME], $this->text)),
+            'twitter:description' => ucfirst(strtr(@$option[static::SMDESC], $this->text)),
+            'twitter:image'       => strtr($this->image ?: $this->site->image, $this->path),
             'twitter:creator'     => $this->user ? $this->user->twit : NULL,
             'twitter:site'        => $this->site ? $this->site->twit : NULL,
 
             'og:type'             => 'website',
-            'og:title'            => ucfirst(strtr(@$option[static::SMNAME], $this->attr)),
-            'og:description'      => ucfirst(strtr(@$option[static::SMDESC], $this->attr)),
-            'og:image'            => strtr($this->image ?: $this->site->image, $this->file),
+            'og:title'            => ucfirst(strtr(@$option[static::SMNAME], $this->text)),
+            'og:description'      => ucfirst(strtr(@$option[static::SMDESC], $this->text)),
+            'og:image'            => strtr($this->image ?: $this->site->image, $this->path),
             'og:url'              => $this->route,
             'og:locale'           => $this->site->lang,
             'og:site_name'        => $this->site->name,
@@ -153,15 +155,16 @@ class Html extends \DOMDocument
         return array
         (
             '@context'            => 'http://schema.org',
-            '@type'               => $this->type,
-            'name'                => ucfirst(strtr(@$option[static::SENAME], $this->attr)),
-            'description'         => ucfirst(strtr(@$option[static::SEDESC], $this->attr)),
-            'image'               => strtr($this->image ?: $this->site->image, $this->file),
+            '@type'               => 'Thing',
+            'name'                => ucfirst(strtr(@$option[static::SENAME], $this->text)),
+            'description'         => ucfirst(strtr(@$option[static::SEDESC], $this->text)),
+            'image'               => strtr($this->image ?: $this->site->image, $this->path),
             'url'                 => $this->route,
-            'author'              => $this->user ? $this->user->goog : NULL,
-            'publisher'           => $this->site ? $this->site->goog : NULL,
-            'datePublished'       => $this->date,
-            'dateModified'        => $this->edit,
+
+            //'author'              => $this->user ? $this->user->goog : NULL,
+            //'publisher'           => $this->site ? $this->site->goog : NULL,
+            //'datePublished'       => $this->date,
+            //'dateModified'        => $this->edit,
         );
     }
 
@@ -214,8 +217,8 @@ class Html extends \DOMDocument
 
     function build($string, $option)
     {
-        $this->preserveWhiteSpace = empty(@$option[static::MINIFY]);
-        @$this->loadHTML($string , LIBXML_COMPACT|LIBXML_NOBLANKS);
+        $this->preserveWhiteSpace = !isset($option[static::MINIFY]);
+        @$this->loadHTML($string, LIBXML_COMPACT | LIBXML_NOBLANKS);
 
         $schema = new \DOMXPath($this); $linked = [ ];
 
@@ -229,13 +232,6 @@ class Html extends \DOMDocument
                 $object->getAttribute('name')] = $object;
         }
 
-        if ($object = @$this->meta['viewport'])
-        {
-            $values = preg_split('/\s*,\s*/', $object->getAttribute( 'content' ));
-            $values = array_diff($values, ['maximum-scale=1.0', 'user-scalable=0']);
-            $object->setAttribute('content', implode(', ', $values));
-        }
-
         if ($source = @$option[static::CUSTOM])
         {
             $this->addHtml(html_entity_decode($source), $this->head);
@@ -244,7 +240,7 @@ class Html extends \DOMDocument
 
         // SEO
 
-        if (@$option[static::SEMETA])
+        if (isset($option[static::SEMETA]))
         {
             if (!($object = @$schema->query('/html/head/title[1]')[0]))
             {
@@ -252,15 +248,15 @@ class Html extends \DOMDocument
                 $this->head->appendChild($object);
             }
 
-            $object->nodeValue = ucfirst(strtr(@$option[static::SENAME], $this->attr));
+            $object->nodeValue = ucfirst(strtr(@$option[static::SENAME], $this->text));
 
-            $this->setMeta('description', ucfirst(strtr(@$option[static::SEDESC], $this->attr)));
+            $this->setMeta('description', ucfirst(strtr(@$option[static::SEDESC], $this->text)));
             $this->addJson(array_filter($this->getJson($option)), 'application/ld+json');
         }
 
         // SMO
 
-        if (@$option[static::SMMETA])
+        if (isset($option[static::SMMETA]))
         {
             $this->root->setAttribute('prefix', 'og: http://ogp.me/ns#');
 
@@ -272,7 +268,7 @@ class Html extends \DOMDocument
 
         // DNS
 
-        if (@$option[static::PREDNS])
+        if (isset($option[static::PREDNS]))
         {
             $filter = '//link[@rel="stylesheet"]|//script[@src]|/html/body//img[@src]';
             $domain = [ wp_parse_url($option[static::CDNURL], PHP_URL_HOST) => 1 ];
@@ -293,7 +289,7 @@ class Html extends \DOMDocument
 
         // CSS
 
-        if (@$option[Style::MINIFY])
+        if (isset($option[Style::MINIFY]))
         {
             $bundle = new Style();
             $inline = new Style();
@@ -360,7 +356,7 @@ class Html extends \DOMDocument
 
         // JS
 
-        if (@$option[Script::MINIFY])
+        if (isset($option[Script::MINIFY]))
         {
             $bundle = new Script();
             $inline = new Script();
@@ -416,7 +412,7 @@ class Html extends \DOMDocument
 
         // IMG
 
-        if (@$option[Image::SRCSET])
+        if (isset($option[Image::SRCSET]))
         {
             $cdndir = wp_parse_url(__CDNURL__, PHP_URL_PATH);
             $filter = "/html/body//img[contains(@src, '{$cdndir}')]";
@@ -441,8 +437,15 @@ class Html extends \DOMDocument
 
         // DOM
 
-        if (@$option[static::MINIFY])
+        if (isset($option[static::MINIFY]))
         {
+            if ($object = @$this->meta['viewport'])
+            {
+                $values = preg_split('/\s*,\s*/', $object->getAttribute( 'content' ));
+                $values = array_diff($values, ['maximum-scale=1.0', 'user-scalable=0']);
+                $object->setAttribute('content', implode(', ', $values));
+            }
+
             foreach ($schema->query('//comment()') as $object)
             {
                 $object->parentNode->removeChild($object);
@@ -456,8 +459,40 @@ class Html extends \DOMDocument
             $string = $this->saveHTML();
         }
 
-        count($linked) && header('Link: '. implode(',', $linked));
+        count($linked) && header('Link: ' . implode(',', $linked));
         return $string;
+    }
+
+
+    function cache($string, $option)
+    {
+        if ($string = $this->build($string, $option))
+        {
+            $handle = sprintf('~%s.html', md5(__TARGET__));
+
+            file_put_contents($target = __CDNDIR__ . $handle, $string);
+            file_put_contents($target . '.gz' , gzencode($string , 9));
+        }
+
+        return $string;
+    }
+
+
+    static function serve($accept)
+    {
+        $source = sprintf(__CDNDIR__ . '~%s.html', md5( __TARGET__ ));
+
+        if ($encode = $accept && (strpos($accept, 'gzip') !== false))
+        {
+            $source .= '.gz';
+        }
+
+        if (file_exists($source) && time() - filemtime($source) < 600)
+        {
+            header('Vary: Accept-Encoding, Cookie');
+            $encode && header('Content-Encoding: gzip');
+            @readfile($source) && exit();
+        }
     }
 
 
@@ -468,6 +503,20 @@ class Html extends \DOMDocument
             return new static($object);
 
         }, $result ?: [ ]);
+    }
+
+
+    // ACTIONS
+
+    static function countCache()
+    {
+        return count(glob(__CDNDIR__ . '~*.{html}', GLOB_BRACE));
+    }
+
+
+    static function cleanCache()
+    {
+        return count(array_filter(glob(__CDNDIR__ . '~*.{html,html.gz}', GLOB_BRACE), 'unlink')) / 2;
     }
 }
 

@@ -18,7 +18,6 @@ class Page extends Html
     {
         parent::__construct($object);
 
-        $this->type  = 'WebPage';
         $this->ruid  = $object->ID;
         $this->slug  = $object->post_name;
         $this->name  = $object->post_title;
@@ -34,7 +33,7 @@ class Page extends Html
 
     function __invoke($target, $option)
     {
-        if (@$option[static::SEMETA])
+        if (isset($option[static::SEMETA]))
         {
             add_filter('post_class', function($vector)
             {
@@ -42,7 +41,7 @@ class Page extends Html
             });
         }
 
-        if (@$option[Comment::UNLINK])
+        if (isset($option[Comment::UNLINK]))
         {
             if ($source = @$_GET['replytocom'])
             {
@@ -50,7 +49,7 @@ class Page extends Html
             }
         }
 
-        if (@$option[Comment::UNPAGE])
+        if (isset($option[Comment::UNPAGE]))
         {
             if (get_query_var('cpage'))
             {
@@ -71,6 +70,21 @@ class Page extends Html
             'article:modified_time'  => $this->edit,
             'article:author'         => $this->user->face,
             'article:publisher'      => $this->site->face,
+        ]);
+    }
+
+
+    function getJson($option)
+    {
+        return array_merge(parent::getJson($option),
+        [
+            '@type'                  => 'WebPage',
+            'headline'               => $this->name,
+            'datePublished'          => $this->date,
+            'dateModified'           => $this->edit,
+            'commentCount'           => $this->notes,
+            'author'                 => $this->user->goog,
+            'publisher'              => $this->site->goog,
         ]);
     }
 

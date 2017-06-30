@@ -23,7 +23,6 @@ class User extends Html
     {
         parent::__construct($object);
 
-        $this->type  = 'Person';
         $this->ruid  = $object->ID;
         $this->slug  = $object->data->user_nicename;
         $this->name  = $object->data->display_name;
@@ -45,22 +44,12 @@ class User extends Html
 
     function __invoke($target, $option)
     {
-        if (@$option[static::UNLINK])
+        if (isset($option[static::UNLINK]))
         {
             return static::route($target, NULL);
         }
 
         return parent::__invoke($target, $option);
-    }
-
-
-    function getJson($option)
-    {
-        return array_merge(parent::getJson($option),
-        [
-            'givenName'          => $this->fname,
-            'familyName'         => $this->lname,
-        ]);
     }
 
 
@@ -74,6 +63,17 @@ class User extends Html
             'profile:first_name' => $this->fname,
             'profile:last_name'  => $this->lname,
             'profile:gender'     => NULL,
+        ]);
+    }
+
+
+    function getJson($option)
+    {
+        return array_merge(parent::getJson($option),
+        [
+            '@type'              => 'Person',
+            'givenName'          => $this->fname,
+            'familyName'         => $this->lname,
         ]);
     }
 

@@ -12,47 +12,40 @@ class Term extends Html
     const SMNAME = 'term_smname';
     const SMDESC = 'term_smdesc';
 
-    public $items;
+    public $posts;
 
 
     function __construct($object)
     {
         parent::__construct($object);
 
-        $this->type  = 'ItemList';
         $this->ruid  = $object->term_id;
         $this->slug  = $object->slug;
         $this->name  = $object->name;
         $this->desc  = $object->description;
         $this->route = get_term_link($object);
-        $this->items = [ ];
-    }
-
-
-    function __invoke($target, $option)
-    {
-        foreach (@$GLOBALS['wp_query']->posts ?: [] as $offset => $object)
-        {
-            $this->items[] = array
-            (
-                '@type'    => 'ListItem',
-                'position' => $offset + 1,
-                'url'      => get_permalink($object),
-            );
-        }
-
-        return parent::__invoke($target, $option);
+        $this->posts = @$GLOBALS['wp_query']->posts ?: [];
     }
 
 
     function getJson($option)
     {
+        $offset = 0;
+
         return array_merge(parent::getJson($option),
         [
-            'publisher'       => NULL,
-            'author'          => NULL,
-            'numberOfItems'   => count($this->items),
-            'itemListElement' => $this->items,
+            '@type'              => 'ItemList',
+            'numberOfItems'      => count($this->posts),
+            'itemListElement'    => array_map(function($object) use(&$offset)
+            {
+                return
+                [
+                    '@type'      => 'ListItem',
+                    'position'   => ++$offset,
+                    'url'        => get_permalink($object)
+                ];
+
+            }, $this->posts),
         ]);
     }
 
