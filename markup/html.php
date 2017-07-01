@@ -218,7 +218,11 @@ class Html extends \DOMDocument
     function build($string, $option)
     {
         $this->preserveWhiteSpace = !isset($option[static::MINIFY]);
-        @$this->loadHTML($string, LIBXML_COMPACT | LIBXML_NOBLANKS);
+
+        if (!@$this->loadHTML($string, LIBXML_COMPACT|LIBXML_NOBLANKS))
+        {
+            return $string;
+        }
 
         $schema = new \DOMXPath($this); $linked = [ ];
 
@@ -468,7 +472,7 @@ class Html extends \DOMDocument
     {
         if ($string = $this->build($string, $option))
         {
-            $handle = sprintf('~%s.html', md5(__TARGET__));
+            $handle = sprintf('~%s.html', md5($this->route));
 
             file_put_contents($target = __CDNDIR__ . $handle, $string);
             file_put_contents($target . '.gz' , gzencode($string , 9));
@@ -478,9 +482,9 @@ class Html extends \DOMDocument
     }
 
 
-    static function serve($accept)
+    function serve($accept)
     {
-        $source = sprintf(__CDNDIR__ . '~%s.html', md5( __TARGET__ ));
+        $source = sprintf(__CDNDIR__ . '~%s.html', md5($this->route));
 
         if ($encode = $accept && (strpos($accept, 'gzip') !== false))
         {

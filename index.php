@@ -146,8 +146,7 @@ class Plugin
 
         register_deactivation_hook(__FILE__, function()
         {
-            wp_clear_scheduled_hook( __NAMESPACE__ );
-            Style::cleanCache(); Script::cleanCache(); Html::cleanCache();
+            wp_clear_scheduled_hook( __NAMESPACE__ ); $this->onReboot();
         });
 
 
@@ -163,13 +162,14 @@ class Plugin
             isset($this->option[Comment::DBMETA]) && Comment::cleanMeta();
         });
 
+        add_action('switch_theme', [$this, 'onReboot']);
+
         if (isset($this->option[Image::MINIFY]))
         {
             add_filter('wp_image_editors', [Image::class, 'mount']);
         }
 
-        call_user_func([ $this, '__construct' .
-            (is_admin() ? 'Admin' : 'Front') ]);
+        call_user_func([ $this, '__construct' . (is_admin() ? 'Admin' : 'Front') ]);
     }
 
 
@@ -262,6 +262,13 @@ class Plugin
                 default             : return;
             }
 
+            $markup = new $markup(get_queried_object());
+
+            if ($target = $markup(__TARGET__, $this->option))
+            {
+                wp_redirect($target, 301); exit();
+            }
+
             $ishtml = preg_grep(Html::HEADER, headers_list());
             $method = strtoupper(@$_SERVER['REQUEST_METHOD']);
             
@@ -269,14 +276,7 @@ class Plugin
                 $ishtml && empty($_REQUEST) && $method === 'GET' &&
                 !is_user_logged_in() && !defined('DOING_CRON'))
             {
-                Html::serve(@$_SERVER['HTTP_ACCEPT_ENCODING']);
-            }
-
-            $markup = new $markup(get_queried_object());
-
-            if ($target = $markup(__TARGET__, $this->option))
-            {
-                wp_redirect($target, 301); exit();
+                $markup->serve(@$_SERVER['HTTP_ACCEPT_ENCODING']);
             }
 
             $ishtml && ob_start(function($string) use($markup, $static)
@@ -673,6 +673,14 @@ class Plugin
         }
 
         return $option;
+    }
+
+
+    function onReboot()
+    {
+        Style::cleanCache();
+        Script::cleanCache();
+        Html::cleanCache();
     }
 }
 

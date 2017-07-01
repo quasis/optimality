@@ -111,6 +111,18 @@ class Sitemap extends \DOMDocument
     }
 
 
+    function cache($string, $option)
+    {
+        return $this->build($string, $option);
+    }
+
+
+    function serve($accept)
+    {
+        return false;
+    }
+
+
     static function ping()
     {
         wp_remote_get(static::GOOG . urlencode(home_url(static::PATH)), ['blocking' => false]);
