@@ -1,6 +1,6 @@
 === Optimality ===
 Contributors: optimality
-Tags: optimization, optimize, pagespeed, performance, speed, aggregate, async, cache, cdn, comments, compress, compression, css, database, defer javascript, google libraries, google pagespeed, gtmetrix, html, image, javascript, JS, lazy load images, lossless, meta tags, minification, minify, minimize, open graph, render-blocking css, render-blocking javascript, revisions, schema, seo, share, sitemap, smo, social, spam, stylesheet, yslow
+Tags: optimization, optimize, pagespeed, performance, speed, accelerate theme, cache, compress images, fast loading, free image optimizer, gtmetrix, image compression, image optimization, image optimizer, improve response time, make faster, minify, optimiser, optimize css delivery, optimize images, optimize site, optimize speed, reduce server response time, search engine optimization, serve scaled images, site optimization, site speed optimization, social media optimization, speed optimizer, speed up 
 Requires at least: 4.0
 Tested up to: 4.8
 Stable tag: 4.8
@@ -13,7 +13,7 @@ Optimizes website's content delivery, images, database, permalink structure, sea
 
 The plugin optimizes your website for users, search engine robots and social networks. Your website will load much faster, robots will find the markup they are looking for and social networks will show attractive snippets of your content.
 
-Plugin's functionality can be roughly divided into 5 major categories: Content Delivery Optimization (CDO), Database Optimization (DBO), Website Structure Optimization (WSO), Search Engine Optimization (SEO) and Social Media Optimization (SMO).
+Plugin's functionality can be roughly divided into 5 major categories: Content Delivery Optimization, Database Optimization, Website Structure Optimization, Search Engine Optimization and Social Media Optimization.
 
 = Content Delivery Optimization =
 * Removes unnecessary meta tags from the head section of HTML.
@@ -47,7 +47,8 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 = Search Engines Optimization =
 * Provides title and description templates for search engines.
 * Generates proper schema.org markup for every page type.
-* Creates an XML sitemap of pages, posts, categories, tags, images, etc.
+* Creates an XML sitemap of the website (including images).
+* Pings Google and Bing once new page/post is published.
 
 = Social Media Optimization =
 * Provides title and description templates for social networks.
@@ -55,7 +56,7 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 * Generates proper Twitter markup for every page type.
 
 = General Features =
-* Small (132kB) and fast (no noticeable overhead).
+* Small (32kB zipped) and fast (no noticeable overhead).
 * Not invasive - doesnt pollute your admin area.
 * Leaves no traces if you choose to try and then deinstall.
 
