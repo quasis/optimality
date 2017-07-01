@@ -14,6 +14,8 @@ class Post extends Page
     const SMNAME = 'post_smname';
     const SMDESC = 'post_smdesc';
 
+    public $section;
+
 
     function __construct($object)
     {
@@ -21,13 +23,22 @@ class Post extends Page
     }
 
 
+    function __invoke($target, $option)
+    {
+        if (count($object = get_the_terms($this->proto, 'category')))
+        {
+            $this->section = $object[0]->name;
+        }
+
+        return parent::__invoke($target, $option);
+    }
+
+
     function getMeta($option)
     {
-        $object = get_the_terms($this->proto, 'category');
-
         return array_merge(parent::getMeta($option),
         [
-            'article:section' => empty($object) ? NULL : $object[0]->name,
+            'article:section' => $this->section,
             'article:tag'     => array_map(function($object)
             {
                 return $object->name;
@@ -39,12 +50,10 @@ class Post extends Page
 
     function getJson($option)
     {
-        $object = get_the_terms($this->proto, 'category');
-
         return array_merge(parent::getJson($option),
         [
             '@type'           => 'Article',
-            'articleSection'  => empty($object) ? NULL : $object[0]->name,
+            'articleSection'  => $this->section,
             'keywords'        => implode(',', array_map(function($object)
             {
                 return $object->name;
