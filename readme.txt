@@ -78,6 +78,11 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 
 == Changelog ==
 
+= 0.5.1 =
+* Bug Fix: Category names not appearing in post titles
+* Bug Fix: Disabled sitemap caching
+* Bug Fix: Do not process non HTML content
+
 = 0.5.0 =
 * Feature: HTML cache
 * Feature: Schema markup fine-tunning

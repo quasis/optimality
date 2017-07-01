@@ -4,7 +4,7 @@
  * Plugin Name: Optimality
  * Plugin URI:  https://wordpress.org/plugins/optimality
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
- * Version:     0.5.0
+ * Version:     0.5.1
  * License:     GPLv2 or later
  * Author:      Optimality
  * Author URI:  https://optimality.io
