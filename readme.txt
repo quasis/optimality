@@ -79,6 +79,9 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 
 == Changelog ==
 
+= 0.6.1 =
+* Bug Fix: error.php was not uploaded to the trunk
+
 = 0.6.0 =
 * Feature: Redirect 404 error pages to the parent page
 * Feature: Support for old versions of PHP (below 7.0)
