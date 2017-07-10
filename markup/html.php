@@ -11,7 +11,7 @@ class Html extends \DOMDocument
     const UNEMOJ = 'html_unemoj';
     const PREDNS = 'html_predns';
     const MINIFY = 'html_minify';
-    const STATIC = 'html_static';
+    const CACHE  = 'html_static';
     const CDNURL = 'html_cdnurl';
     const SEMETA = 'html_semeta';
     const SENAME = 'html_sename';
@@ -224,11 +224,16 @@ class Html extends \DOMDocument
             return $string;
         }
 
-        $schema = new \DOMXPath($this); $linked = [ ];
-
         $this->root = $this->documentElement;
-        $this->head = $this->root->childNodes[0];
-        $this->body = $this->root->childNodes[1];
+        $this->head = @$this->root->childNodes[0];
+        $this->body = @$this->root->childNodes[1];
+
+        if (empty($this->head) || empty($this->body))
+        {
+            return $string;
+        }
+
+        $schema = new \DOMXPath($this); $linked = [ ];
 
         foreach ($schema->query('/html/head/meta') as $object)
         {

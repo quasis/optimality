@@ -4,7 +4,7 @@
  * Plugin Name: Optimality
  * Plugin URI:  https://wordpress.org/plugins/optimality
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
- * Version:     0.5.1
+ * Version:     0.6.0
  * License:     GPLv2 or later
  * Author:      Optimality
  * Author URI:  https://optimality.io
@@ -22,6 +22,7 @@ require_once('markup/section.php');
 require_once('markup/user.php');
 require_once('markup/comment.php');
 require_once('markup/media.php');
+require_once('markup/error.php');
 require_once('markup/sitemap.php');
 
 require_once('markup/image.php');
@@ -56,7 +57,7 @@ class Plugin
             Html::UNEMOJ    => NULL,
             Html::PREDNS    => NULL,
             Html::MINIFY    => NULL,
-            Html::STATIC    => NULL,
+            Html::CACHE     => NULL,
             Style::MINIFY   => NULL,
             Style::CDNLIB   => NULL,
             Script::MINIFY  => NULL,
@@ -79,6 +80,7 @@ class Plugin
             Comment::UNPAGE => NULL,
             User::UNLINK    => NULL,
             Media::UNLINK   => NULL,
+            Error::PARENT   => NULL,
 
             Site::SEMETA    => NULL,
             Site::SENAME    => ':name - :tagline',
@@ -259,6 +261,7 @@ class Plugin
                 case is_search()    :
                 case is_archive()   : $markup = Html::class;    break;
                 case is_sitemap()   : $markup = Sitemap::class; break;
+                case is_404()       : $markup = Error::class;   break;
                 default             : return;
             }
 
@@ -272,7 +275,7 @@ class Plugin
             $ishtml = preg_grep(Html::HEADER, headers_list());
             $method = strtoupper(@$_SERVER['REQUEST_METHOD']);
             
-            if ($static = isset( $this->option[ Html::STATIC ] ) &&
+            if ($static = isset( $this->option[ Html::CACHE ] ) &&
                 $ishtml && empty($_REQUEST) && $method === 'GET' &&
                 !is_user_logged_in() && !defined('DOING_CRON'))
             {
@@ -334,8 +337,8 @@ class Plugin
             $this->addOption(Html::UNEMOJ   , __('Disable Emojis'       ), $module, 'binary', __('Remove styles and scripts of the new WordPress emoji feature.'));
             $this->addOption(Html::PREDNS   , __('Prefetch DNS'         ), $module, 'binary', __('Reduce DNS lookup time by pre-resolving all external domains.'));
             $this->addOption(Html::MINIFY   , __('Optimize HTML'        ), $module, 'binary', __('Remove comments, unnecessary whitespace and empty nodes.'));
-            $this->addOption(Html::STATIC   , __('Cache HTML'           ), $module, 'binary', __('Cache dynamic HTML content and serve it as static HTML files.'));
-            $this->addAction(Html::STATIC   , __('Clean HTML Cache'     ), 'trash', [Html::class, 'cleanCache'], [Html::class, 'countCache']);
+            $this->addOption(Html::CACHE    , __('Cache HTML'           ), $module, 'binary', __('Cache dynamic HTML content and serve it as static HTML files.'));
+            $this->addAction(Html::CACHE    , __('Clean HTML Cache'     ), 'trash', [Html::class, 'cleanCache'], [Html::class, 'countCache']);
             $this->addOption(Style::MINIFY  , __('Optimize Styles'      ), $module, 'binary', __('Combine files, flatten imports, remove comments and cache.'));
             $this->addAction(Style::MINIFY  , __('Clean Style Cache'    ), 'trash', [Style::class, 'cleanCache'], [Style::class, 'countCache']);
             $this->addOption(Style::CDNLIB  , __('Offload Styles'       ), $module, 'binary', __('Serve popular CSS libraries from content delivery networks.'));
@@ -371,6 +374,7 @@ class Plugin
             $this->addOption(Media::UNLINK  , __('Disable Attachments'  ), $module, 'binary', __('Redirect image attachment pages to the URL of the parent page.'));
             $this->addOption(Comment::UNLINK, __('Disable Reply Queries'), $module, 'binary', __('Redirect ?replytocom=id to #comment-id in comment replies.'));
             $this->addOption(Comment::UNPAGE, __('Depaginate Comments'  ), $module, 'binary', __('Redirect paginated comments to the URL of the parent page.'));
+            $this->addOption(Error::PARENT  , __('Redirect 404 Errors'  ), $module, 'binary', __('Redirect 404 error pages one level up in the website hierarchy.'));
 
             $this->addModule($module = 'seo', __('Search Engines'       ));
             $this->addOption(Site::SEMETA   , __('Homepage'             ), $module, 'binary', __('Insert title, meta tags, schema, and include in the sitemap.'));

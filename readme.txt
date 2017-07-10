@@ -20,9 +20,9 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 * Reduces DNS lookup time by pre-resolving all external domains.
 * Removes comments, unnecessary whitespace and empty nodes from HTML.
 * Caches dynamic HTML content and serves it as static HTML files.
-* Combines CSS files, flattens imports, removes comments and caches.
+* Combines styles, flattens imports, removes comments and caches.
 * Serves popular CSS libraries from content delivery networks.
-* Combines JS files, defers loading, removes comments and caches.
+* Combines scripts, defers loading, removes comments and caches.
 * Serves popular JS libraries from content delivery networks.
 * Strips metadata and compresses thumbnail images (requires ImageMagick).
 * Canonicalizes image URLs, adds 'srcset' attributes and serves from CDN.
@@ -43,6 +43,7 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 * Redirects image attachment pages to the URL of the parent page.
 * Redirects ?replytocom=id to #comment-id in comment replies.
 * Redirects paginated comment pages to the parent page.
+* Redirects 404 error pages one level up in the website hierarchy.
 
 = Search Engines Optimization =
 * Provides title and description templates for search engines.
@@ -77,6 +78,10 @@ Plugin's functionality can be roughly divided into 5 major categories: Content D
 3. Select the desired options on the Settings page of the plugin.
 
 == Changelog ==
+
+= 0.6.0 =
+* Feature: Redirect 404 error pages to the parent page
+* Feature: Support for old versions of PHP (below 7.0)
 
 = 0.5.1 =
 * Bug Fix: Category names not appearing in post titles
