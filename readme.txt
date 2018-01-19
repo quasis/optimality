@@ -1,5 +1,5 @@
 === Optimality ===
-Contributors: optimality
+Contributors: quasis, optimality
 Tags: optimization, optimize, pagespeed, performance, speed, accelerate theme, cache, compress images, fast loading, free image optimizer, gtmetrix, image compression, image optimization, image optimizer, improve response time, make faster, minify, optimiser, optimize css delivery, optimize images, optimize site, optimize speed, reduce server response time, search engine optimization, serve scaled images, site optimization, site speed optimization, social media optimization, speed optimizer, speed up 
 Requires at least: 4.0
 Tested up to: 4.9.2
