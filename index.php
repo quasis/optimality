@@ -6,8 +6,8 @@
  * Description: Optimizes website's content delivery, images, database, permalink structure, search engines and social media markup.
  * Version:     0.6.1
  * License:     GPLv2 or later
- * Author:      Optimality
- * Author URI:  https://optimality.io
+ * Author:      Quasis
+ * Author URI:  https://quasis.io
  * Text Domain: optimality
  */
 
